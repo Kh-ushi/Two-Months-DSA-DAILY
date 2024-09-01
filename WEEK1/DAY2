@@ -1,0 +1,180 @@
+// 153. Find Minimum in Rotated Sorted Array
+
+
+class Solution {
+    public int findMin(int[] nums) {
+        
+        int si=0;
+        int ei=nums.length-1;
+
+        while(si<ei){
+            int mid=si+(ei-si)/2;
+
+            if(mid>0 && nums[mid-1]>nums[mid]){
+                return nums[mid];
+            }
+            else if(nums[mid]>nums[ei]){
+                si=mid+1;
+            }
+            else{
+                ei=mid;
+            }
+
+
+        }
+
+        return nums[si];
+
+    }
+}
+
+// 162. Find Peak Element
+
+class Solution {
+    public int findPeakElement(int[] nums) {
+        
+        int si=0;
+        int ei=nums.length-1;
+
+       while(si<ei){
+
+         int mid=si+(ei-si)/2;
+
+         if(mid>0 && mid<nums.length-1 && nums[mid]>nums[mid-1] && nums[mid]>nums[mid+1]){
+            return mid;
+         } 
+         else if(nums[mid]<nums[mid+1]){
+            si=mid+1;
+         }
+         else{
+            ei=mid-1;
+         }
+       }
+
+       return si;
+
+    }
+}
+
+// 68. Text Justification
+
+
+
+class Solution {
+    int MAX_WIDTH;
+
+    public String findLine(int i, int j, int eachGaddhaSpace, int extraSpaceGadhha, String words[]) {
+
+        String line = "";
+        for (int k = i; k < j; k++) {
+            line += words[k];
+
+            if(k==j-1){
+                continue;
+            }
+
+            for (int z = 1; z <= eachGaddhaSpace; z++) {
+                line += " ";
+            }
+
+            if (extraSpaceGadhha > 0) {
+                line += " ";
+                extraSpaceGadhha--;
+            }
+
+        }
+
+        while(line.length() < MAX_WIDTH) {
+            line += " ";
+        }
+
+        return line;
+
+    }
+
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> result = new ArrayList<>();
+        int n = words.length;
+        int i = 0;
+
+        MAX_WIDTH = maxWidth;
+
+        while (i < n) {
+            int lettersCount = words[i].length();
+            int j = i + 1;
+            int gaddhe = 0;
+
+            while (j < n && words[j].length() + 1 + gaddhe + lettersCount <= maxWidth) {
+                lettersCount += words[j].length();
+                gaddhe += 1;
+                j++;
+            }
+
+            int remainingSlots = maxWidth - lettersCount;
+            int eachGaddhaSpace = gaddhe == 0 ? 0 : remainingSlots / gaddhe;
+            int extraSpaceGadhha = gaddhe == 0 ? 0 : remainingSlots % gaddhe;
+
+            if (j == n) {
+                eachGaddhaSpace = 1;
+                extraSpaceGadhha = 0;
+            }
+
+            result.add(findLine(i, j, eachGaddhaSpace, extraSpaceGadhha, words));
+            i = j;
+
+        }
+
+        return result;
+    }
+}
+
+
+// 84. Largest Rectangle in Histogram
+
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        
+        Stack<Integer>s=new Stack<>();
+        int nsr[]=new int[heights.length];
+
+        // CALCULATING NEXT SMALLER RIGHT
+        for(int i=heights.length-1;i>=0;i--){
+            while(!s.isEmpty() && heights[s.peek()]>=heights[i]){
+                s.pop();
+            }
+            if(s.isEmpty()){
+                nsr[i]=heights.length;
+            }
+            else{
+                nsr[i]=s.peek();
+            }
+            s.push(i);
+        }
+
+        // NEXT SMALLER LEFT
+
+        s=new Stack<>();
+         int nsl[]=new int[heights.length];
+           for(int i=0;i<heights.length;i++){
+            while(!s.isEmpty() && heights[s.peek()]>=heights[i]){
+                s.pop();
+            }
+            if(s.isEmpty()){
+                nsl[i]=-1;
+            }
+            else{
+                nsl[i]=s.peek();
+            }
+            s.push(i);
+        }
+
+
+        int maxArea=0;
+        for(int i=0;i<heights.length;i++){
+            int area=(nsr[i]-nsl[i]-1)*heights[i];
+            maxArea=Math.max(area,maxArea);
+        }
+
+        return maxArea;
+    }
+}

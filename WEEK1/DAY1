@@ -1,0 +1,263 @@
+// 59. Spiral Matrix II
+
+class Solution {
+    public int[][] generateMatrix(int n) {
+        int ans[][] = new int[n][n];
+
+        int startRow = 0;
+        int endRow = n - 1;
+        int startCol = 0;
+        int endCol = n - 1;
+        int num = 0;
+
+        while (startRow <= endRow && startCol <= endCol) {
+
+            // TOP
+            for (int j = startCol; j <= endCol; j++) {
+                ans[startRow][j] = ++num;
+            }
+
+            // RIGHT
+            for (int i = startRow + 1; i <= endRow; i++) {
+                ans[i][endCol] = ++num;
+            }
+
+            // BOTTOM
+            for (int j = endCol - 1; j >= startCol; j--) {
+                if (startRow == endRow) {
+                    break;
+                }
+                ans[endRow][j] = ++num;
+            }
+
+            // LEFT
+            for (int i = endRow - 1; i > startRow; i--) {  
+                if (startCol == endCol) {
+                    break;
+                }
+                ans[i][startCol] = ++num;
+            }
+
+            startRow++;
+            endRow--;
+            startCol++;
+            endCol--;
+        }
+
+        return ans;
+    }
+}
+
+
+// 80. Remove Duplicates from Sorted Array II
+
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        
+        if(nums.length<=2){
+            return nums.length;
+        }
+
+        int i=2;
+        for(int j=2;j<nums.length;j++){
+
+            if(nums[j]!=nums[i-2]){
+                nums[i]=nums[j];
+                i++;
+            }
+        }
+
+        return i;
+
+    }
+}
+
+
+// 81. Search in Rotated Sorted Array II
+
+class Solution {
+
+    public int findMinIdx(int arr[]) {
+        int left = 0;
+        int right = arr.length - 1;
+
+        while (left < right) {
+           while(left<right && arr[left]==arr[left+1]){
+            left++;
+           }
+           while(left<right && arr[right]==arr[right-1]){
+            right--;
+           }
+
+            int mid = left + (right - left) / 2;
+
+            if (arr[mid] > arr[right]) {
+                left = mid + 1;
+            } else if (arr[mid] < arr[right]) {
+                right = mid;
+            } 
+        }
+
+        return left;
+    }
+
+    public int binSearch(int nums[], int si, int ei, int target) {
+
+        while (si <= ei) {
+            int mid = si + (ei - si) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) {
+                ei = mid - 1;
+            } else {
+                si = mid + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public int searchMain(int nums[], int target) {
+
+        int min = findMinIdx(nums);
+
+        if (target >= nums[min] && target <= nums[nums.length - 1]) {
+            return binSearch(nums, min, nums.length - 1, target);
+        } else {
+            return binSearch(nums, 0, min - 1, target);
+        }
+    }
+
+    public boolean search(int[] nums, int target) {
+        return searchMain(nums, target) != -1;
+    }
+}
+
+// 90. Subsets II
+
+class Solution {
+  
+  public void solve(int nums[],int idx,List<Integer>list,HashSet<List<Integer>>ans){
+
+    if(idx==nums.length){
+        ans.add(new ArrayList<>(list));
+        return;
+    }
+    
+     
+     list.add(nums[idx]);
+     solve(nums,idx+1,list,ans);
+     list.remove(list.size()-1);
+     solve(nums,idx+1,list,ans);
+
+  }
+
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+       Arrays.sort(nums);
+        HashSet<List<Integer>>ans=new HashSet();
+        List<Integer>list=new ArrayList<>();
+        solve(nums,0,list,ans);
+        List<List<Integer>>ans1=new ArrayList<List<Integer>>(ans);
+        return ans1;    
+    }
+}
+
+// 134. Gas Station
+
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+         int totalGas = 0;
+        int totalCost = 0;
+        int currentTank = 0;
+        int start = 0;
+
+        for (int i = 0; i < gas.length; i++) {
+            totalGas += gas[i];
+            totalCost += cost[i];
+            currentTank += gas[i] - cost[i];
+
+            
+            if (currentTank < 0) {
+                start = i + 1; 
+                currentTank = 0; 
+            }
+        }
+        return totalGas >= totalCost ? start : -1;
+    }
+}
+
+// 137. Single Number II
+
+class Solution {
+    public int singleNumber(int[] nums) {
+        int result = 0;
+        for (int k = 0; k < 32; k++) {
+            int temp = 1 << k;
+            int countOnes = 0;
+            int countZeros = 0;
+            for (int num : nums) {
+
+                if ((temp & num) == 0) {
+                    countZeros++;
+                } else {
+                    countOnes++;
+                }
+            }
+
+            if((countOnes%3)==1){
+               result=result|temp;
+            }
+
+        }
+
+        return result;
+
+    }
+}
+
+
+// 150. Evaluate Reverse Polish Notation
+
+
+
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> s = new Stack<>();
+
+        for (int i = 0; i < tokens.length; i++) {
+            String tok = tokens[i];
+
+            if (tok.equals("+") || tok.equals("-") || tok.equals("*") || tok.equals("/")) {
+                if (s.size() >= 2) {
+                    int num2 = s.pop();
+                    int num1 = s.pop();
+                    int result = 0;
+
+                    switch (tok) {
+                        case "+":
+                            result = num1 + num2;
+                            break;
+
+                        case "-":
+                            result = num1 - num2;
+                            break;
+
+                        case "*":
+                            result = num1 * num2;
+                            break;
+
+                        case "/":
+                            result = num1 / num2;
+                            break;
+                    }
+
+                    s.push(result);
+                }
+            } else {
+                s.push(Integer.parseInt(tok));
+            }
+        }
+
+        return s.pop(); 
+    }
+}
