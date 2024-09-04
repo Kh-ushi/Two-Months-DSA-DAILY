@@ -251,3 +251,133 @@ class Solution {
          
      }
  }
+
+
+//  1697. Checking Existence of Edge Length Limited Paths
+
+class Solution {
+
+    public class DisjointUnion {
+        int rank[];
+        int par[];
+
+        public DisjointUnion(int n) {
+            rank = new int[n];
+            par = new int[n];
+            for (int i = 0; i < par.length; i++) {
+                par[i] = i;
+            }
+        }
+
+        public int find(int num) {
+            if (par[num] != num) {
+                par[num] = find(par[num]); // Path compression
+            }
+            return par[num];
+        }
+
+        public void union(int num1, int num2) {
+            int par1 = find(num1);
+            int par2 = find(num2);
+
+            if (par1 != par2) {
+                if (rank[par1] > rank[par2]) {
+                    par[par2] = par1;
+                } else if (rank[par1] < rank[par2]) {
+                    par[par1] = par2;
+                } else {
+                    par[par2] = par1;
+                    rank[par1]++;
+                }
+            }
+        }
+    }
+
+    public class Edge implements Comparable<Edge> {
+        int src;
+        int dest;
+        int limit;
+        int idx;
+
+        public Edge(int src, int dest, int limit, int idx) {
+            this.src = src;
+            this.dest = dest;
+            this.limit = limit;
+            this.idx = idx;
+        }
+
+        @Override
+        public int compareTo(Edge e2) {
+            return Integer.compare(this.limit, e2.limit);
+        }
+    }
+
+    public boolean[] distanceLimitedPathsExist(int n, int[][] edgeList, int[][] queries) {
+        DisjointUnion ds = new DisjointUnion(n);
+        boolean[] ans = new boolean[queries.length];
+        PriorityQueue<Edge> edges = new PriorityQueue<>();
+
+        for (int i = 0; i < edgeList.length; i++) {
+            edges.add(new Edge(edgeList[i][0], edgeList[i][1], edgeList[i][2], i));
+        }
+
+        PriorityQueue<Edge> queries1 = new PriorityQueue<>();
+        for (int i = 0; i < queries.length; i++) {
+            queries1.add(new Edge(queries[i][0], queries[i][1], queries[i][2], i));
+        }
+
+        while (!queries1.isEmpty()) {
+            Edge curr = queries1.poll();
+            while (!edges.isEmpty() && edges.peek().limit < curr.limit) {
+                Edge e = edges.poll();
+                ds.union(e.src, e.dest);
+            }
+            if (ds.find(curr.src) == ds.find(curr.dest)) {
+                ans[curr.idx] = true;
+            }
+        }
+
+        return ans;
+    }
+
+}
+
+
+
+// 719. Find K-th Smallest Pair Distance
+
+class Solution {
+    public int smallestDistancePair(int[] nums, int k) {
+
+        Arrays.sort(nums);
+
+        int left=0;
+        int right=nums[nums.length-1]-nums[0];
+
+        while(left<right){
+            int mid=left+(right-left)/2;
+            if(countPairs(nums,mid)<k){
+                left=mid+1;
+            }
+            else{
+                right=mid;
+            }
+        }
+
+      return left;
+        
+    }
+
+    public int countPairs(int nums[],int mid){
+        int left=0;
+        int count=0;
+        for(int right=0;right<nums.length;right++){
+            while(nums[right]-nums[left]>mid){
+                left++;
+            }
+            count+=right-left;
+        }
+        return count;
+    }
+    
+}
