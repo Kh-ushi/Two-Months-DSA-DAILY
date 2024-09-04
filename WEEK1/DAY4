@@ -1,0 +1,253 @@
+// 19. Remove Nth Node From End of List
+
+
+class Solution {
+
+    public int getSize(ListNode head) {
+        ListNode temp = head;
+        int size = 1;
+        while (temp.next != null) {
+            size++;
+            temp = temp.next;
+        }
+        return size;
+    }
+
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+
+        int i = 1;
+        ListNode temp = head;
+        int size = getSize(head);
+
+        if (n == size) {
+            ListNode newHead = head.next;
+            head.next = null;
+            return newHead;
+        }
+
+        while (i < size - n) {
+            i++;
+            temp = temp.next;
+        }
+        ListNode dummy = temp.next;
+        temp.next = temp.next.next;
+        dummy.next = null;
+
+        return head;
+
+    }
+}
+
+// 61. Rotate List
+
+
+class Solution {
+    public int getSize(ListNode head){
+        ListNode temp=head;
+        int i=1;
+        while(temp.next!=null){
+            i++;
+            temp=temp.next;
+        }
+        return i;
+    }
+  
+    public ListNode rotateRight(ListNode head, int k) {
+
+       if(head==null || head.next==null){
+            return head;
+       }
+       int size=getSize(head);
+
+       if(k>=size){
+        k=k%size;
+       }
+       if(k==0){
+         return head;
+       }
+
+       ListNode temp=head;
+       while(temp.next!=null){
+        temp=temp.next;
+       }
+       temp.next=head;
+
+       temp=head;
+       int i=1;
+       while(i<(size-k)){
+        i++;
+        temp=temp.next;
+       }
+
+       head=temp.next;
+       temp.next=null;
+       return head;
+       
+        
+    }
+}
+
+// 82. Remove Duplicates from Sorted List II
+
+
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+
+        if(head==null || head.next==null){
+            return head;
+        }
+
+        ListNode dummy=new ListNode(-200);
+        dummy.next=head;
+        ListNode i=dummy;
+        ListNode j=head;
+
+        while(j.next!=null){
+            if(j.val==j.next.val){
+                while(j.next!=null && j.val==j.next.val){
+                     j=j.next;
+                }
+                if(j.next==null){
+                    i.next=null;
+                    return dummy.next;
+                }
+                i.next=j.next;
+                j.next=null;
+                j=i.next;
+            }else{
+                i=j;
+                j=j.next;
+            }
+        }
+
+        return dummy.next;
+
+        
+    }
+}
+
+// 86. Partition List
+
+class Solution {
+    public ListNode partition(ListNode head, int x) {
+        ListNode beforeHead = new ListNode(0); 
+        ListNode before = beforeHead;
+        ListNode afterHead = new ListNode(0);  
+        ListNode after = afterHead;
+
+        while (head != null) {
+            if (head.val < x) {
+                before.next = head;  
+                before = before.next;
+            } else {
+                after.next = head;   
+                after = after.next;
+            }
+            head = head.next;
+        }
+
+        after.next = null;  
+        before.next = afterHead.next; 
+
+        return beforeHead.next; 
+    }
+}
+
+
+// 167. Two Sum II - Input Array Is Sorted
+
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+
+        int start=0;
+        int end=numbers.length-1;
+
+        while(start<end){
+            int sum=numbers[start]+numbers[end];
+            if(sum==target){
+                return new int[]{start+1,end+1};
+            }
+            else if(sum<target){
+               start++;
+            }
+            else{
+               end--;
+            }
+        }
+
+        return new int[]{};
+        
+    }
+}
+
+// 189. Rotate Array
+
+class Solution {
+    public void reverse(int arr[], int si, int ei) {
+        int left = si;
+        int right = ei;
+        while (left < right) {
+            int temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+            left++;  
+            right--; 
+        }
+    }
+
+    public void rotate(int[] nums, int k) {
+        k = k % nums.length;  
+        reverse(nums, 0, nums.length - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+    }
+}
+
+// 457. Circular Array Loop
+
+class Solution {
+  
+    public int getIndex(int[] nums, int i){
+       int n = nums.length;
+         return ((i + nums[i]) % n + n) % n; 
+    }
+ 
+     public boolean circularArrayLoop(int[] nums) {
+         int n=nums.length;
+         if(n<2){
+             return false;
+         }
+         for(int i=0;i<n;i++){
+            if(nums[i]==0){
+             continue;
+            } 
+ 
+            int slow=i;
+            int fast=getIndex(nums,i);
+ 
+            while(nums[i]*nums[fast]>0 && nums[i]*nums[getIndex(nums,fast)]>0){
+                if(slow==fast){
+                 if(slow==getIndex(nums,slow)){
+                     break;
+                 }
+                 return true;
+                }
+                slow = getIndex(nums, slow);
+               fast = getIndex(nums, getIndex(nums, fast));
+            }
+ 
+             slow = i;
+             int value = nums[i];
+             while (nums[slow] * value > 0) {
+                 int next = getIndex(nums, slow);
+                 nums[slow] = 0;  
+                 slow = next;
+             }
+ 
+             
+         }
+ 
+         return false;
+         
+     }
+ }
